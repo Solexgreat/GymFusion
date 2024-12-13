@@ -126,29 +126,3 @@ export class SubscriptionsService {
   }
 
 }
-
-
-
-// I'm creating an Backend API endpoint that includes user, gyms, intstructor and subscription 
-// how will the subscription havig a one-many relationship with user  be step on nest.js 
-
-// Key Responsibilities of the Subscription Service
-// CRUD Operations for Subscriptions:
-
-// Create a new subscription for a user.
-// Retrieve subscription details (by ID, user, gym, etc.).
-// Update a subscription (e.g., change type, renew).
-// Delete a subscription (e.g., cancel it).
-// Validation and Business Logic:
-
-// Ensure a subscription is unique per user (if applicable).
-// Validate subscription dates (start and end date).
-// Handle upgrades, downgrades, or renewals.
-// Integration with Related Entities:
-
-// Link subscriptions to users, gyms, or instructors.
-// Retrieve subscriptions for a specific gym or instructor.
-// Optional Features:
-
-// Calculate pricing, discounts, or promotions.
-// Handle subscription statuses (active, expired, canceled).
