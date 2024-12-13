@@ -116,8 +116,12 @@ export class UserService {
     return user;
   }
 
-  findAll() {
-    return `This action returns all user`;
+  async findAll(role?: Role): Promise<User[]> {
+    const queryBuilder = this.userRepository.createQueryBuilder('user');
+    if (role) {
+      queryBuilder.where('user.role = :role', { role });
+    }
+    return await queryBuilder.getMany();
   }
 
   findOneByEmail(email: string) {
@@ -162,11 +166,23 @@ export class UserService {
     return await this.userRepository.save(user)
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async updateUser(id: string, updateUserDto: UpdateUserDto): Promise<User> {
+    const user = await this.findOneById(id);
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const updatedUser = Object.assign(user, updateUserDto);
+    return await this.userRepository.save(updatedUser);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async deleteUser(id: string): Promise<void> {
+    const user = await this.findOneById(id);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    await this.userRepository.delete(id);
   }
 }
