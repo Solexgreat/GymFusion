@@ -8,27 +8,34 @@ import {
   Param,
   Query,
   BadRequestException,
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { Role } from 'src/enums/role.enum';
+import { Public } from 'src/auth/decorators/public.decorator';
+import { RolesGurd } from 'src/auth/guards/role.guard';
+import { Roles } from 'src/auth/decorators/role.decorator';
 
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Post()
+  @Public()
+  @Post('/register')
   async createUser(@Body() createUserDto: CreateUserDto): Promise<User> {
     return await this.userService.create(createUserDto);
   }
 
-  @Post('/admin')
+  @Public()
+  @Post('/register-admin')
   async createAdmin(@Body() createUserDto: CreateUserDto): Promise<User> {
     return await this.userService.createAdmin(createUserDto);
   }
 
+  @Public()
   @Post('/instructor/:gymId')
   async createUserAsInstructor(
     @Body() createUserDto: CreateUserDto,
@@ -37,6 +44,7 @@ export class UserController {
     return await this.userService.createUserAsInstructor(createUserDto, gymId);
   }
 
+  @Public()
   @Post('/gym-owner/:gymId')
   async createUserAsGymOwner(
     @Body() createUserDto: CreateUserDto,
@@ -45,6 +53,8 @@ export class UserController {
     return await this.userService.createUserAsGymOwner(createUserDto, gymId);
   }
 
+  @UseGuards(RolesGurd)
+  @Roles(Role.superUser)
   @Get()
   async findAll(@Query('role') role?: Role): Promise<User[]> {
     if (role && !Object.values(Role).includes(role)) {

@@ -4,11 +4,14 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { DataSource, Repository } from 'typeorm';
+import * as generator from 'generate-password'
 import * as argon2 from 'argon2';
 import { Role } from 'src/enums/role.enum';
 import { InstructorsService } from 'src/instructors/instructors.service';
 import { Gym } from 'src/gyms/entities/gym.entity';
 import { GymService } from 'src/gyms/gym.service';
+import { ChangePasswordDto } from './dto/change-password.dto';
+import { PasswordReset } from './entities/password.entity';
 
 @Injectable()
 export class UserService {
@@ -18,6 +21,9 @@ export class UserService {
 
     @InjectRepository(Gym)
     private gymRepository: Repository<Gym>,
+
+    @InjectRepository(PasswordReset)
+    private passwordResetRepository: Repository<PasswordReset>,
 
     private readonly instructorService: InstructorsService,
     private readonly gymService : GymService,
@@ -124,7 +130,7 @@ export class UserService {
     return await queryBuilder.getMany();
   }
 
-  findOneByEmail(email: string) {
+  async findOneByEmail(email: string) {
     const user = this.userRepository.findOne({ where: {email}})
 
     //verify and return user
@@ -134,7 +140,7 @@ export class UserService {
     return user;
   }
 
-  async findOneById(id: string): Promise<User> {
+  async findOneById(id: string) {
     const user = await this.userRepository.findOne({ where: { id } })
     return user
   }
@@ -184,5 +190,88 @@ export class UserService {
     }
 
     await this.userRepository.delete(id);
+  }
+
+  async savePasswordResetToken(email: string, token: string) {
+    const expirationTime = new Date();
+    expirationTime.setHours(expirationTime.getHours() + 1);
+
+    const user = await this.findOneByEmail(email)
+
+    if(user.passwordReset) {
+      await this.passwordResetRepository.remove(user.passwordReset);
+    }
+
+    const passwordReset = new PasswordReset();
+    passwordReset.user = user;
+    passwordReset.token = token;
+    passwordReset.expiredAt = expirationTime;
+
+    return await this.passwordResetRepository.save(passwordReset);
+  }
+
+  async sendPasswordResetEmail(email: string, token: string) {
+    
+  }
+
+  async requestPasswordRequest(email: string): Promise<any> {
+    const token = this.generateRandomToken(48)
+
+    try {
+      await this.sendPasswordResetEmail(email, token);
+
+      await this.savePasswordResetToken(email, token);
+
+      return 'Email successfully sent';
+    } catch (error) {
+      console.error('Error sending email or saving token:', error.message);
+      throw new InternalServerErrorException('Failed to send password reset email');
+    }
+  }
+
+  async verifyToken(token: string): Promise<PasswordReset> {
+    const passwordReset = await this.passwordResetRepository.findOne({ where: {token: token}})
+
+    if (!passwordReset) {
+      throw new BadRequestException('Token is not valid')
+    }
+
+    const currentDate = new Date()
+    if (currentDate > passwordReset.expiredAt){
+      throw new BadRequestException('Token is not valid')
+    }
+
+    return passwordReset
+  }
+
+  async changePassword(id: string, changePasswordDto: ChangePasswordDto ) {
+    const {newPassword, oldPassword} = changePasswordDto;
+
+    const user = await this.findOneById(id);
+
+    const isPasswordSame = await argon2.verify(user.password, oldPassword)
+    if ( !isPasswordSame ){
+      throw new BadRequestException('Password does not match')
+    }
+
+    const hashPassword = await argon2.hash(newPassword)
+
+    user.password = hashPassword;
+    await this.userRepository.save(user)
+
+    return user
+  }
+
+  private generateRandomToken(lenght: number): string{
+    const password = generator.generate({
+      length: lenght,
+      numbers: true,
+      uppercase: true,
+      lowercase: true,
+      excludeSimilarCharacters: true,
+    })
+
+    console.log("password=", password)
+    return password
   }
 }

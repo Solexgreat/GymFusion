@@ -10,7 +10,7 @@ export class PasswordReset{
     token: string;
 
     @Column()
-    expireAt: Date;
+    expiredAt: Date;
 
     @CreateDateColumn()
     createdAt: Date;

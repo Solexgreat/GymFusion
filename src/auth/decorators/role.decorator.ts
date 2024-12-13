@@ -3,4 +3,4 @@ import { Role } from "src/enums/role.enum"
 
 
 export const ROLE_KEY = 'role'
-export const Public = (...roles: Role[]) => SetMetadata(ROLE_KEY, true)
+export const Roles = (...roles: Role[]) => SetMetadata(ROLE_KEY, true)
