@@ -10,14 +10,14 @@ import { Role } from 'src/enums/role.enum';
 
 @Injectable()
 export class GymService {
-
   constructor(
     @InjectRepository(Gym)
     private gymRepository: Repository<Gym>,
 
     @InjectRepository(User)
-    private userRepository: Repository<User>
-  ){}
+    private userRepository: Repository<User>,
+  ) {}
+
   async createGym(createGymDto: CreateGymDto): Promise<Gym> {
     const gym = this.gymRepository.create(createGymDto);
     return this.gymRepository.save(gym);
@@ -26,55 +26,75 @@ export class GymService {
   async linkGymOwnerToGym(userId: string, gymId: string): Promise<Gym> {
     const gym = await this.gymRepository.findOne({ where: { id: gymId } });
     if (!gym) {
-      throw new Error('Gym not found');
+      throw new NotFoundException('Gym not found');
+    }
+
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new NotFoundException('User not found');
     }
 
     // Link the gym to the user as the owner
-    gym.owner.id = userId;
+    user.role = Role.gymOwner;
+    await this.userRepository.save(user);
+
+    gym.owner = user;
     return this.gymRepository.save(gym);
   }
 
   async createGymOwner(createGymOwnerDto: CreateGymOwnerDto): Promise<User> {
     const { userId, gymId } = createGymOwnerDto;
 
-    // Find the user and gym by their IDs
     const user = await this.userRepository.findOne({ where: { id: userId } });
     const gym = await this.gymRepository.findOne({ where: { id: gymId } });
 
     if (!user) {
       throw new NotFoundException('User not found');
     }
-
     if (!gym) {
       throw new NotFoundException('Gym not found');
     }
 
-    // Ensure the user has the role 'GymOwner'
     user.role = Role.gymOwner;
     await this.userRepository.save(user);
 
-    // Assign the user as the gym owner
     gym.owner = user;
     await this.gymRepository.save(gym);
 
     return user;
   }
 
-
-  async getAllGym(): Promise<Gym[]> {
-    const Gyms = await this.gymRepository.find()
-    return Gyms;
+  async getAllGyms(): Promise<Gym[]> {
+    return this.gymRepository.find({ relations: ['owner', 'instructors'] });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} gym`;
+  async getGymById(id: string): Promise<Gym> {
+    const gym = await this.gymRepository.findOne({
+      where: { id },
+      relations: ['owner', 'instructors'],
+    });
+    if (!gym) {
+      throw new NotFoundException('Gym not found');
+    }
+    return gym;
   }
 
-  update(id: number, updateGymDto: UpdateGymDto) {
-    return `This action updates a #${id} gym`;
+  async updateGym(id: string, updateGymDto: UpdateGymDto): Promise<Gym> {
+    const gym = await this.gymRepository.findOne({ where: { id } });
+    if (!gym) {
+      throw new NotFoundException('Gym not found');
+    }
+
+    Object.assign(gym, updateGymDto);
+    return this.gymRepository.save(gym);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} gym`;
+  async deleteGym(id: string): Promise<void> {
+    const gym = await this.gymRepository.findOne({ where: { id } });
+    if (!gym) {
+      throw new NotFoundException('Gym not found');
+    }
+
+    await this.gymRepository.remove(gym);
   }
 }
