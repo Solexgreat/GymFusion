@@ -1,34 +1,54 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  UseGuards,
+  Req,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateAuthDto } from './dto/login.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
+import { UserService } from 'src/user/user.service';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { RefreshJwtGuard } from './guards/refresh.token.guard';
+import { Public } from './decorators/public.decorator';
+import { LocalAuthGuard } from './guards/local.auth.guard';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly userService: UserService,
+  ) {}
 
-  @Post()
-  create(@Body() createAuthDto: CreateAuthDto) {
-    return this.authService.create(createAuthDto);
+  @Public()
+  @Post('/login')
+  @UseGuards(LocalAuthGuard)
+  async login (@Req() req) {
+    const user = req.user
+    console.log(user)
+    return await this.authService.login(user)
   }
 
-  @Get()
-  findAll() {
-    return this.authService.findAll();
+
+  @Post('refresh')
+  @UseGuards(RefreshJwtGuard)
+  async refreshToken(@Req() req: any) {
+    const user = req.user;
+    const refreshToken = req.headers['x-refresh-token'];
+
+    if (!refreshToken) {
+      throw new UnauthorizedException('Refresh token not provided');
+    }
+
+    return {
+      accessToken: await this.authService.refreshToken(user, refreshToken),
+    };
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.authService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAuthDto: UpdateAuthDto) {
-    return this.authService.update(+id, updateAuthDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.authService.remove(+id);
+  @Post('logout')
+  @UseGuards(JwtAuthGuard)
+  async logout(@Req() req: any) {
+    const user = req.user;
+    return this.authService.logout(user.email);
   }
 }

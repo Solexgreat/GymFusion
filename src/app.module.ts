@@ -22,6 +22,8 @@ import { ScheduleModule } from './schedule/schedule.module';
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       synchronize: true,
+      logging: true,
+      entities: [__dirname + '/**/*.entity{.ts}'],
       options: {
         encrypt: false,
       },
