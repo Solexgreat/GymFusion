@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 import { InstructorsModule } from './instructors/instructors.module';
 import { GymModule } from './gyms/gym.module';
@@ -10,23 +10,23 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { ClassModule } from './class/class.module';
 import { ScheduleModule } from './schedule/schedule.module';
+import ormconfig from './config/ormconfig';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
+import { EmailService } from './email/email.services';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
-    TypeOrmModule.forRoot({
-      type: 'mssql',
-      host: process.env.DB_HOST,
-      port: +process.env.DB_PORT,
-      username: process.env.DB_USERNAME,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME,
-      synchronize: true,
-      logging: true,
-      entities: [__dirname + '/**/*.entity{.ts}'],
-      options: {
-        encrypt: false,
-      },
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [ormconfig]
+    }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        ...configService.get('typeorm')
+      }),
+      inject: [ConfigService]
     }),
     UserModule,
     GymModule,
@@ -36,9 +36,13 @@ import { ScheduleModule } from './schedule/schedule.module';
     ClassModule,
     ScheduleModule,
   ],
+  controllers: [AppController],
+  providers: [
+    AppService, {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard
+    },
+    EmailService,
+  ]
 })
 export class AppModule {}
-
-// give e a step b step process of setting up my mssql  Locally in nest.js
-
-// I just install SSMS-setup-ENU, but I don't know where to access and start using it

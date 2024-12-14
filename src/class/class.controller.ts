@@ -22,14 +22,14 @@ export class ClassController {
 
   // Get a single class by ID
   @Get(':id')
-  async findOne(@Param('id') id: number): Promise<Class> {
+  async findOne(@Param('id') id: string): Promise<Class> {
     return this.classService.findOneClassbyId(id);
   }
 
   // Update class details
   @Put(':id')
   async updateClass(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Body() updateClassDto: UpdateClassDto,
   ): Promise<Class> {
     return this.classService.updateClass(id, updateClassDto);
@@ -37,7 +37,7 @@ export class ClassController {
 
   // Delete a class by ID
   @Delete(':id')
-  async removeClass(@Param('id') id: number): Promise<void> {
+  async removeClass(@Param('id') id: string): Promise<void> {
     return this.classService.removeClass(id);
   }
 }
