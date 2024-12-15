@@ -4,11 +4,6 @@ import { registerAs } from '@nestjs/config';
 
 dotenvConfig();
 
-console.log('DB_HOST:', process.env.DB_HOST);
-console.log('DB_PORT:', process.env.DB_PORT);
-console.log('DB_USERNAME:', process.env.DB_USERNAME);
-console.log('DB_PASSWORD:', process.env.DB_PASSWORD);
-console.log('DB_NAME:', process.env.DB_NAME);
 
 
 const config = {
@@ -18,9 +13,10 @@ const config = {
     username: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
-    synchronize: false,
+    synchronize: true,
     logging: true,
-    entities: [__dirname + '/**/*.entity{.ts}'],
+    entities: [__dirname + '/../entities/*.entity.{ts,js}'],
+    migrations: [__dirname + '/../migrations/*.{js,ts}'],
     options: {
     encrypt: false,
     }
