@@ -13,6 +13,7 @@ import { ScheduleModule } from './schedule/schedule.module';
 import ormconfig from './config/ormconfig';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
+import { JwtService } from '@nestjs/jwt';
 import { EmailService } from './email/email.services';
 import { StripeModule } from './stripe/stripe.module';
 import { PaymentsModule } from './payments/payment.module';
@@ -47,6 +48,7 @@ import { PaymentsModule } from './payments/payment.module';
       useClass: JwtAuthGuard
     },
     EmailService,
+    JwtService,
   ]
 })
 export class AppModule {}
