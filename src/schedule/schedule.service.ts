@@ -12,7 +12,7 @@ export class SchedulesService {
     @InjectRepository(Schedule)
     private readonly scheduleRepository: Repository<Schedule>,
 
-    private classService: ClassService,
+    private readonly classService: ClassService,
   ) {}
 
   async createSchedule(createScheduleDto: CreateScheduleDto): Promise<Schedule> {

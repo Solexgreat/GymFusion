@@ -13,14 +13,14 @@ import { Role } from 'src/enums/role.enum';
 export class InstructorsService {
   constructor(
     @InjectRepository(Gym)
-    private gymRepository: Repository<Gym>,
+    private readonly gymRepository: Repository<Gym>,
 
     @InjectRepository(User)
-    private userRepository: Repository<User>,
+    private readonly userRepository: Repository<User>,
 
     @InjectRepository(Instructor)
-    private instructorRepository: Repository<Instructor>,
-    private readonly userService: UserService,
+    private readonly instructorRepository: Repository<Instructor>,
+    // private userService: UserService,
   ){}
   async createInstructorFromUser(userId: string, gymId: string, manager: EntityManager): Promise<Instructor> {
     const user = await manager.findOne(User, { where: { id: userId } });

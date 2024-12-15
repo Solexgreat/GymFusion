@@ -14,6 +14,9 @@ import ormconfig from './config/ormconfig';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { EmailService } from './email/email.services';
+import { StripeModule } from './stripe/stripe.module';
+import { PaymentModule } from './payment/payment.module';
+import { InvoiceModule } from './invoice/invoice.module';
 
 @Module({
   imports: [
@@ -35,6 +38,9 @@ import { EmailService } from './email/email.services';
     AuthModule,
     ClassModule,
     ScheduleModule,
+    StripeModule,
+    PaymentModule,
+    InvoiceModule,
   ],
   controllers: [AppController],
   providers: [

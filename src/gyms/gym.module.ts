@@ -10,9 +10,10 @@ import { Class } from 'src/class/entities/class.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Gym, User, Subscription, Instructor, Class]),
+    TypeOrmModule.forFeature([Gym, User]),
   ],
   controllers: [GymController],
   providers: [GymService],
+  exports: [GymService],
 })
 export class GymModule {}

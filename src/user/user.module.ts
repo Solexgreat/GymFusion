@@ -4,17 +4,20 @@ import { UserService } from './user.service';
 import { UserController } from './user.controller';
 import { User } from './entities/user.entity';
 import { PasswordReset } from './entities/password.entity';
-import { Subscription } from 'src/subscriptions/entities/subscription.entity';
-import { GymService } from 'src/gyms/gym.service';
-import { InstructorsService } from 'src/instructors/instructors.service';
+// import { GymService } from 'src/gyms/gym.service';
+// import { InstructorsService } from 'src/instructors/instructors.service';
 import { Gym } from 'src/gyms/entities/gym.entity';
+import { Instructor } from 'src/instructors/entities/instructor.entity';
+import { GymModule } from 'src/gyms/gym.module';
+import { InstructorsModule } from 'src/instructors/instructors.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, PasswordReset, Subscription, Gym]),
+    GymModule, InstructorsModule,
+    TypeOrmModule.forFeature([User, PasswordReset, Instructor]),
   ],
   controllers: [UserController],
-  providers: [UserService, GymService, InstructorsService],
+  providers: [UserService],
   exports: [UserService],
 })
 export class UserModule {}

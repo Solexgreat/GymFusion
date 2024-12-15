@@ -7,16 +7,21 @@ import {
   Param,
   Body,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { SubscriptionsService } from './subscriptions.service';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
 import { UpdateSubscriptionDto } from './dto/update-subscription.dto';
+import { Public } from 'src/auth/decorators/public.decorator';
+import { RolesGurd } from 'src/auth/guards/role.guard';
+import { Role } from 'src/enums/role.enum';
+import { Roles } from 'src/auth/decorators/role.decorator';
 
 @Controller('subscriptions')
 export class SubscriptionsController {
   constructor(private readonly subscriptionsService: SubscriptionsService) {}
 
-  // Create a new subscription
+  @Public()
   @Post()
   async createSubscription(
     @Body() createSubscriptionDto: CreateSubscriptionDto,
@@ -29,6 +34,8 @@ export class SubscriptionsController {
   }
 
   // Get all subscriptions for a user by email
+  @UseGuards(RolesGurd)
+  @Roles(Role.superUser)
   @Get('user')
   async getUserSubscriptions(@Query('email') email: string) {
     return await this.subscriptionsService.getUserSubscriptions(email);
@@ -59,6 +66,8 @@ export class SubscriptionsController {
   }
 
   // Get all active subscriptions
+  @UseGuards(RolesGurd)
+  @Roles(Role.superUser)
   @Get('active')
   async getActiveSubscriptions() {
     return await this.subscriptionsService.getActiveSubscriptions();

@@ -8,6 +8,8 @@ import { SchedulesService } from './schedule.service';
 export class SchedulesController {
   constructor(private readonly schedulesService: SchedulesService) {}
 
+  //Create Schedule
+  
   @Post()
   async createSchedule(
     @Body() createScheduleDto: CreateScheduleDto,

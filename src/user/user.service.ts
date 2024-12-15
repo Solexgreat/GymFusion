@@ -19,8 +19,8 @@ export class UserService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
 
-    @InjectRepository(Gym)
-    private gymRepository: Repository<Gym>,
+    // @InjectRepository(Gym)
+    // private gymRepository: Repository<Gym>,
 
     @InjectRepository(PasswordReset)
     private passwordResetRepository: Repository<PasswordReset>,

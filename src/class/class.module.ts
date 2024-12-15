@@ -10,5 +10,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
   imports: [TypeOrmModule.forFeature([Class, Gym, Instructor])],
   controllers: [ClassController],
   providers: [ClassService],
+  exports: [ClassService],
 })
 export class ClassModule {}
