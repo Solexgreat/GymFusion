@@ -10,6 +10,8 @@ import {
 import { InstructorsService } from './instructors.service';
 import { CreateInstructorDto } from './dto/create-instructor.dto';
 import { UpdateInstructorDto } from './dto/update-instructor.dto';
+import { Public } from 'src/auth/decorators/public.decorator';
+
 
 @Controller('instructors')
 export class InstructorsController {
@@ -34,6 +36,7 @@ export class InstructorsController {
   }
 
   // Create an instructor directly
+  @Public()
   @Post()
   async createInstructorDirectly(@Body() createInstructorDto: CreateInstructorDto) {
     return await this.instructorsService.createInstructorDirectly(createInstructorDto);

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -17,10 +17,19 @@ import { JwtService } from '@nestjs/jwt';
 import { EmailService } from './email/email.services';
 import { StripeModule } from './stripe/stripe.module';
 import { PaymentsModule } from './payments/payment.module';
+import { ThrottlerModule } from '@nestjs/throttler';
 
+@Global()
 @Module({
   imports: [
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 10,
+      },
+    ]),
     ConfigModule.forRoot({
+      envFilePath: '.env',
       isGlobal: true,
       load: [ormconfig]
     }),

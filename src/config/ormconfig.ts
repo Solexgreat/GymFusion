@@ -15,8 +15,9 @@ const config = {
     database: process.env.DB_NAME,
     synchronize: true,
     logging: true,
-    entities: [__dirname + '/../entities/*.entity.{ts,js}'],
-    migrations: [__dirname + '/../migrations/*.{js,ts}'],
+    entities: ['dist/**/*.entity{.ts,.js}'],
+    migrations: ['dist/migrations/*{.ts,.js}'],
+    autoLoadEntities: true,
     options: {
     encrypt: false,
     }

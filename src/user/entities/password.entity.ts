@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { User } from "./user.entity";
 
 @Entity()
@@ -9,13 +9,13 @@ export class PasswordReset{
     @Column({unique: true})
     token: string;
 
-    @Column()
+    @Column({ type: 'datetime' })
     expiredAt: Date;
 
-    @CreateDateColumn()
+    @CreateDateColumn({ type: 'datetime' })
     createdAt: Date;
 
-    @CreateDateColumn()
+    @UpdateDateColumn({ type: 'datetime' })
     updatedAt: Date;
 
     @OneToOne(() => User, (user) => user.passwordReset)
