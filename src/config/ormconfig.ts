@@ -4,7 +4,7 @@ import { registerAs } from '@nestjs/config';
 
 dotenvConfig();
 
-
+// const isProduction = process.env.NODE_ENV === 'production'
 
 const config = {
     type: 'mysql',
@@ -13,7 +13,7 @@ const config = {
     username: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
-    synchronize: true,
+    synchronize: false,
     logging: true,
     entities: ['dist/**/*.entity{.ts,.js}'],
     migrations: ['dist/migrations/*{.ts,.js}'],
