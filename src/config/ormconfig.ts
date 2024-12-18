@@ -15,10 +15,10 @@ const config = {
     username: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
-    ssl: {
-        ca: fs.readFileSync(process.env.DB_SSL_CA)
-      },
-    synchronize: false,
+    // ssl: {
+    //     ca: fs.readFileSync(process.env.DB_SSL_CA)
+    //   },
+    synchronize: true,
     logging: true,
     entities: ['dist/**/*.entity{.ts,.js}'],
     migrations: ['dist/migrations/*{.ts,.js}'],
