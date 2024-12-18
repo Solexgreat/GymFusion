@@ -3,6 +3,11 @@ import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/user/entities/user.entity';
 import * as argon2 from 'argon2';
+import {config as dotenvConfig} from 'dotenv'
+
+dotenvConfig()
+
+console.log(process.env.REFRESH_EXPIRY);
 
 
 @Injectable()
