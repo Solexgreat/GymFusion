@@ -6,7 +6,7 @@ import { Subscription } from "src/subscriptions/entities/subscription.entity";
 @Entity()
 export class User {
     @PrimaryGeneratedColumn('uuid')
-    id: string;
+    id?: string;
 
     @Column()
     firstName: string;
@@ -18,7 +18,7 @@ export class User {
     email: string;
 
     @Column({nullable: true})
-    phoneNumber: number;
+    phoneNumber?: number;
 
     @Column('date')
     dateOfBirth: string;
@@ -33,20 +33,20 @@ export class User {
     password: string;
 
     @Column({type: 'enum', enum: Role, default: Role.user})
-    role: Role;
+    role?: Role;
 
     @Column({ nullable: true })
-    refreshToken: string;
+    refreshToken?: string;
 
     @CreateDateColumn()
-    createdAt: string;
+    createdAt?: Date;
 
     @CreateDateColumn()
-    updatedAt: string;
+    updatedAt?: Date;
 
     @OneToMany(() => Subscription, (subscription) => subscription.user)
-    subscriptions: Subscription[];
+    subscriptions?: Subscription[];
 
     @OneToOne(() => PasswordReset)
-    passwordReset: PasswordReset;
+    passwordReset?: PasswordReset;
 }
