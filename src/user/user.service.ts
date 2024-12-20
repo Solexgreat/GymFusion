@@ -6,7 +6,7 @@ import { User } from './entities/user.entity';
 import { DataSource, Repository } from 'typeorm';
 import * as generator from 'generate-password'
 import * as argon2 from 'argon2';
-import { Role } from 'src/enums/role.enum';
+import { Role } from '../enums/role.enum';
 import { InstructorsService } from 'src/instructors/instructors.service';
 import { Gym } from 'src/gyms/entities/gym.entity';
 import { GymService } from 'src/gyms/gym.service';
